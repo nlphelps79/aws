@@ -1,0 +1,20 @@
+- name: Dynamic root volume snapshot restore
+  gather_facts: no
+  hosts: prod_primary_node
+
+  tasks:
+  - name: venv setup
+    pip:
+      virtualenv: "{{ venv_loc }}"
+      name:
+      - boto3
+      - pytz
+      virtualenv_site_packages: no
+
+  - name: staging of the python script
+    copy:
+      src: ../Backup_restore.py
+      dest: "{{ venv_loc }}"
+
+  - name: Running snapshot restore
+    shell: source {{ venv_loc }}/bin/activate && python {{ venv_loc }}/Backup_restore.py {{ snap_restore_type }} {{ instance_ids }}
